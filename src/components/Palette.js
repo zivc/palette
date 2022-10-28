@@ -14,12 +14,20 @@ const {shadeKeys, lightDomain, darkDomain} = vars;
 
 const Palette = ({fgMode, bgMode, fg, bg}) => {
 
-    const {primary, background} = useMemo(() => {
+    const colorSchemes = useMemo(() => {
         return {
             primary: chroma.scale(["black", fg, "white"]).domain(lightDomain).mode(fgMode),
             background: chroma.scale(["black", bg, "white"]).domain(darkDomain).mode(bgMode),
         }
     }, [fg, bg, bgMode, fgMode]);
+
+    const maxWidth = useMemo(() => {
+        const name = Object.keys(colorSchemes).sort((a, b) => b.length - a.length)[0];
+        const shade = shadeKeys.sort((a, b) => b.length - a.length)[0];
+        return (`${name}.${shade}`.length) + 'em';
+    }, [colorSchemes])
+
+    console.log(maxWidth)
 
     return (
         <VStack flex={1} fontSize={"xs"}>
@@ -27,18 +35,10 @@ const Palette = ({fgMode, bgMode, fg, bg}) => {
                 <PaletteBox prefix={"primary"} color={fg}/>
                 <PaletteBox prefix="background" color={bg}/>
             </HStack>
-            <HStack space={2} w={"100%"} justifyContent={"space-evenly"} p={2}>
-                {Object.entries({primary, background}).map(([prefix, colorSet], indx) => {
-                    return <VStack space={1} key={indx} flexGrow={1}>
-                        {shadeKeys.map((shadeKey) => (
-                            <PaletteBox prefix={prefix} name={shadeKey} key={shadeKey}
-                                        color={colorSet(shadeKey / 1000).hex()}/>
-                        ))}
-                    </VStack>
-                })}
-                <HStack space={0} flexGrow={1} p={2} backgroundColor={"white"} borderRadius={"xl"}>
-                    {Object.entries({primary, background}).map(([prefix, colorSet], indx) => {
-                        return <VStack space={1} key={indx} flexGrow={1}>
+            <HStack space={2} w={"100%"} justifyContent={"center"} p={2}>
+                <HStack space={0} p={12} borderRadius={"xl"}>
+                    {Object.entries(colorSchemes).map(([prefix, colorSet], indx) => {
+                        return <VStack space={1} key={indx} flexGrow={1} maxWidth={maxWidth}>
                             {shadeKeys.map((shadeKey) => (
                                 <PaletteBox prefix={prefix} name={shadeKey} key={shadeKey}
                                             color={colorSet(shadeKey / 1000).hex()}/>
@@ -46,9 +46,19 @@ const Palette = ({fgMode, bgMode, fg, bg}) => {
                         </VStack>
                     })}
                 </HStack>
-                <HStack space={0} flexGrow={1} p={2} backgroundColor={"black"} borderRadius={"xl"}>
-                    {Object.entries({primary, background}).map(([prefix, colorSet], indx) => {
-                        return <VStack space={1} key={indx} flexGrow={1}>
+                <HStack space={0} p={12} backgroundColor={"white"} borderRadius={"xl"}>
+                    {Object.entries(colorSchemes).map(([prefix, colorSet], indx) => {
+                        return <VStack space={1} key={indx} flexGrow={1} maxWidth={maxWidth}>
+                            {shadeKeys.map((shadeKey) => (
+                                <PaletteBox prefix={prefix} name={shadeKey} key={shadeKey}
+                                            color={colorSet(shadeKey / 1000).hex()}/>
+                            ))}
+                        </VStack>
+                    })}
+                </HStack>
+                <HStack space={0} p={12} backgroundColor={"black"} borderRadius={"xl"}>
+                    {Object.entries(colorSchemes).map(([prefix, colorSet], indx) => {
+                        return <VStack space={1} key={indx} flexGrow={1} maxWidth={maxWidth}>
                             {shadeKeys.map((shadeKey) => (
                                 <PaletteBox prefix={prefix} name={shadeKey} key={shadeKey}
                                             color={colorSet(shadeKey / 1000).hex()}/>

@@ -15,9 +15,16 @@ const {shadeKeys, lightDomain, darkDomain} = vars;
 const Palette = ({fgMode, bgMode, fg, bg}) => {
 
     const colorSchemes = useMemo(() => {
-        return {
-            primary: chroma.scale(["black", fg, "white"]).domain(lightDomain).mode(fgMode),
-            background: chroma.scale(["black", bg, "white"]).domain(darkDomain).mode(bgMode),
+        try {
+            return {
+                primary: chroma.scale(["black", fg, "white"]).domain(lightDomain).mode(fgMode),
+                background: chroma.scale(["black", bg, "white"]).domain(darkDomain).mode(bgMode),
+            }
+        } catch (e) {
+            return {
+                primary: chroma.scale(["black", "gray", "white"]).domain(lightDomain).mode(fgMode),
+                background: chroma.scale(["black", "gray", "white"]).domain(darkDomain).mode(bgMode),
+            }
         }
     }, [fg, bg, bgMode, fgMode]);
 
@@ -26,8 +33,6 @@ const Palette = ({fgMode, bgMode, fg, bg}) => {
         const shade = shadeKeys.sort((a, b) => b.length - a.length)[0];
         return (`${name}.${shade}`.length) + 'em';
     }, [colorSchemes])
-
-    console.log(maxWidth)
 
     return (
         <VStack flex={1} fontSize={"xs"}>
